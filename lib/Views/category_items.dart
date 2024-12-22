@@ -1,5 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce_app/Models/category_model.dart';
-import 'package:e_commerce_app/Models/model.dart';
 import 'package:e_commerce_app/Models/sub_category.dart';
 import 'package:e_commerce_app/Utils/colors.dart';
 import 'package:e_commerce_app/Views/items_detail_scree.dart';
@@ -7,17 +7,19 @@ import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
 class CategoryItems extends StatelessWidget {
+  final String selectedCategory;
   final String category;
-  final List<AppModel> categoryItems;
   const CategoryItems({
     super.key,
     required this.category,
-    required this.categoryItems,
+    required this.selectedCategory,
   });
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    final CollectionReference itemsCollection =
+        FirebaseFirestore.instance.collection('items');
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -51,7 +53,8 @@ class CategoryItems extends StatelessWidget {
                             color: Colors.black38,
                           ),
                           border: const OutlineInputBorder(
-                              borderSide: BorderSide.none),
+                            borderSide: BorderSide.none,
+                          ),
                         ),
                       ),
                     ),
@@ -130,19 +133,22 @@ class CategoryItems extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Expanded(
-              child: categoryItems.isEmpty
-                  ? const Center(
-                      child: Text(
-                        "No items available in this category.",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.red,
-                        ),
-                      ),
-                    )
-                  : GridView.builder(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: itemsCollection
+                    .where('category', isEqualTo: selectedCategory)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    final items = snapshot.data!.docs;
+                    if (items.isEmpty) {
+                      return const Center(
+                        child: Text('No items found in this category.'),
+                      );
+                    }
+
+                    return GridView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
-                      itemCount: categoryItems.length,
+                      itemCount: items.length,
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
@@ -151,30 +157,31 @@ class CategoryItems extends StatelessWidget {
                         crossAxisSpacing: 16,
                       ),
                       itemBuilder: (context, index) {
-                        final item = categoryItems[index];
+                        final item =
+                            items[index].data() as Map<String, dynamic>;
                         return GestureDetector(
                           onTap: () {
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (_) => ItemsDetailScree(
-                            //       eCommerceApp: item,
-                            //     ),
-                            //   ),
-                            // );
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ItemsDetailScree(
+                                  productItems: items[index],
+                                ),
+                              ),
+                            );
                           },
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Hero(
-                                tag: item.image ,
+                                tag: item['image'],
                                 child: Container(
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(8),
                                     color: fbackgroundColor2,
                                     image: DecorationImage(
                                       fit: BoxFit.cover,
-                                      image: AssetImage(item.image),
+                                      image: NetworkImage(item['image']),
                                     ),
                                   ),
                                   height: size.height * 0.25,
@@ -211,19 +218,19 @@ class CategoryItems extends StatelessWidget {
                                     color: Colors.amber,
                                     size: 17,
                                   ),
-                                  Text(item.rating.toString()),
-                                  Text(
-                                    "(${item.review})",
-                                    style: const TextStyle(
-                                      color: Colors.black26,
-                                    ),
-                                  ),
+                                  // Text(item.rating.toString()),
+                                  // Text(
+                                  //   "(${item.review})",
+                                  //   style: const TextStyle(
+                                  //     color: Colors.black26,
+                                  //   ),
+                                  // ),
                                 ],
                               ),
                               SizedBox(
                                 width: size.width * 0.5,
                                 child: Text(
-                                  item.name,
+                                  item['name'],
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
@@ -236,7 +243,7 @@ class CategoryItems extends StatelessWidget {
                               Row(
                                 children: [
                                   Text(
-                                    "\$${item.price.toString()}.00",
+                                    "\$${item['price'].toString()}.00",
                                     style: const TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 18,
@@ -245,22 +252,35 @@ class CategoryItems extends StatelessWidget {
                                     ),
                                   ),
                                   const SizedBox(width: 5),
-                                  if (item.isCheck == true)
-                                    Text(
-                                      "\$${item.price + 255}.00",
-                                      style: const TextStyle(
-                                        color: Colors.black26,
-                                        decoration: TextDecoration.lineThrough,
-                                        decorationColor: Colors.black26,
-                                      ),
-                                    ),
+                                  // if (item.isCheck == true)
+                                  //   Text(
+                                  //     "\$${item.price + 255}.00",
+                                  //     style: const TextStyle(
+                                  //       color: Colors.black26,
+                                  //       decoration: TextDecoration.lineThrough,
+                                  //       decorationColor: Colors.black26,
+                                  //     ),
+                                  //   ),
                                 ],
                               )
                             ],
                           ),
                         );
                       },
-                    ),
+                    );
+                  }
+
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text('Error: ${snapshot.error}'),
+                    );
+                  }
+
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              ),
             ),
           ],
         ),
@@ -270,5 +290,5 @@ class CategoryItems extends StatelessWidget {
 }
 // ok
 // thats it for this tutorial
-// we will come with one complete flutter ecommerce app with admin pande, backed and statemanagement 
+// we will come with one complete flutter ecommerce app with admin pande, backed and statemanagement
 // soon.

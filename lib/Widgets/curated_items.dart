@@ -71,7 +71,7 @@ class CuratedItems extends StatelessWidget {
         SizedBox(
           width: size.width * 0.5,
           child: Text(
-            productItems['name'],
+            productItems['name']??"N/A",
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(

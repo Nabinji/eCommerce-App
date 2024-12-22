@@ -1,6 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e_commerce_app/Models/category_model.dart';
-import 'package:e_commerce_app/Models/model.dart';
 import 'package:e_commerce_app/Utils/colors.dart';
 import 'package:e_commerce_app/Views/category_items.dart';
 import 'package:e_commerce_app/Views/items_detail_scree.dart';
@@ -113,24 +111,20 @@ class _AppHomeScreenState extends State<AppHomeScreen> {
                       children: List.generate(
                         streamSnapshot.data!.docs.length,
                         (index) => InkWell(
-                          // onTap: () {
-                          //   // filter products based ont he selected category
-                          //   final filterItems = fashionEcommerceApp
-                          //       .where((item) =>
-                          //           item.category.toLowerCase() ==
-                          //           category[index].name.toLowerCase())
-                          //       .toList();
-                          //   // Nvigate to the categoryItems screen with the filtered lsit
-                          //   Navigator.push(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //       builder: (_) => CategoryItems(
-                          //         category: category[index].name,
-                          //         categoryItems: filterItems,
-                          //       ),
-                          //     ),
-                          //   );
-                          // },
+                          onTap: () {
+                            // Navigate to the category items screen
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => CategoryItems(
+                                  selectedCategory:
+                                      streamSnapshot.data!.docs[index]['name'],
+                                      category: streamSnapshot.data!.docs[index]
+                                      ['name'] ,
+                                ),
+                              ),
+                            );
+                          },
                           child: Column(
                             children: [
                               Container(
@@ -145,7 +139,7 @@ class _AppHomeScreenState extends State<AppHomeScreen> {
                                 ),
                               ),
                               const SizedBox(height: 10),
-                              Text(streamSnapshot.data!.docs[index]['name']),
+                              Text(streamSnapshot.data!.docs[index]['name']??"N/A"),
                             ],
                           ),
                         ),
@@ -196,7 +190,6 @@ class _AppHomeScreenState extends State<AppHomeScreen> {
                         snapshot.data!.docs.length,
                         (index) {
                           final productItems = snapshot.data!.docs[index];
-                          // final eCommerceItems = fashionEcommerceApp[index];
                           return Padding(
                             padding: index == 0
                                 ? const EdgeInsets.symmetric(horizontal: 20)

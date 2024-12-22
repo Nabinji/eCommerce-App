@@ -17,7 +17,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   final TextEditingController numberController = TextEditingController();
   // For sizes
   final TextEditingController sizeController = TextEditingController();
-  // For colors
+  // For fcolor
   final TextEditingController colorController = TextEditingController();
   // For discount percentage
   final TextEditingController discountPercentageController =
@@ -27,7 +27,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   String? selectedCategory; // To store selected category
   List<String> categories = []; // List to store categories
   List<String> sizes = []; // List to store sizes
-  List<String> colors = []; // List to store colors
+  List<String> fcolor = []; // List to store fcolor
   bool isDiscounted = false; // To track if discount is applied
 
   final CollectionReference items =
@@ -71,7 +71,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
 
   void removeColor(String color) {
     setState(() {
-      colors.remove(color); // Remove the selected color
+      fcolor.remove(color); // Remove the selected color
     });
   }
 
@@ -81,7 +81,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
         imagePath == null ||
         selectedCategory == null ||
         sizes.isEmpty || // Check if sizes are provided
-        colors.isEmpty || // Check if colors are provided
+        fcolor.isEmpty || // Check if fcolor are provided
         (isDiscounted && discountPercentageController.text.isEmpty)) {
       // Check if discount percentage is provided when discounted
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -110,8 +110,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
         "image": imageUrl,
         "uploadedBy": uid,
         "category": selectedCategory, // Store the selected category
-        "sizes": sizes, // Store the list of sizes
-        "colors": colors, // Store the list of colors
+        "size": sizes, // Store the list of sizes
+        "fcolor": fcolor, // Store the list of fcolor
         "isDiscounted": isDiscounted, // Store whether there is a discount
         "discountPercentage": isDiscounted
             ? int.tryParse(discountPercentageController.text)
@@ -224,20 +224,26 @@ class _AddItemScreenState extends State<AddItemScreen> {
             Wrap(
               spacing: 8.0,
               children: sizes
-                  .map((size) => Chip(
-                      onDeleted: () => removeSize(size), label: Text(size)))
+                  .map(
+                    (size) => Chip(
+                      onDeleted: () => removeSize(size),
+                      label: Text(size),
+                    ),
+                  )
                   .toList(),
             ),
             const SizedBox(height: 10),
             TextField(
               controller: colorController,
               decoration: const InputDecoration(
-                labelText: 'Colors (comma separated)',
+                labelText: 'Color (comma separated)',
                 border: OutlineInputBorder(),
               ),
               onSubmitted: (value) {
                 setState(() {
-                  colors.addAll(value.split(',').map((c) => c.trim()).toList());
+                  fcolor.addAll(
+                    value.split(',').map((c) => c.trim()).toList(),
+                  );
                   colorController.clear(); // Clear input after adding
                 });
               },
@@ -245,7 +251,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
             // const SizedBox(height: 10),
             Wrap(
               spacing: 8.0,
-              children: colors
+              children: fcolor
                   .map(
                     (color) => Chip(
                       onDeleted: () => removeColor(color),

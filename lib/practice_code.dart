@@ -79,3 +79,21 @@
 //     );
 //   }
 // }
+
+
+
+
+
+
+
+
+
+
+
+
+
+ // final filterItems = fashionEcommerceApp
+                            //     .where((item) =>
+                            //         item.category.toLowerCase() ==
+                            //         category[index].name.toLowerCase())
+                            //     .toList();

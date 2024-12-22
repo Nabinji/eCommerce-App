@@ -141,7 +141,7 @@ class _ItemsDetailScreeState extends State<ItemsDetailScree> {
                   ],
                 ),
                 Text(
-                  widget.productItems['name'],
+                  widget.productItems['name']??"N/A",
                   maxLines: 1,
                   style: const TextStyle(
                     fontWeight: FontWeight.w600,
@@ -383,7 +383,7 @@ class _ItemsDetailScreeState extends State<ItemsDetailScree> {
       case 'black':
         return Colors.black;
       case 'white':
-        return Colors.white;
+        return Colors.black12;
       case 'yellow':
         return Colors.yellow;
       case 'orange':
