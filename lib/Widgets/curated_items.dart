@@ -1,12 +1,13 @@
-import 'package:e_commerce_app/Models/model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce_app/Utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class CuratedItems extends StatelessWidget {
-  final AppModel eCommerceItems;
+  final DocumentSnapshot<Object?>  productItems;
   final Size size;
   const CuratedItems(
-      {super.key, required this.eCommerceItems, required this.size});
+      {super.key, required this.productItems, required this.size,
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -14,14 +15,14 @@ class CuratedItems extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Hero(
-          tag: eCommerceItems.image,
+          tag: productItems['image'],
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               color: fbackgroundColor2,
               image: DecorationImage(
                 fit: BoxFit.cover,
-                image: AssetImage(eCommerceItems.image),
+                image: NetworkImage(productItems['image']),
               ),
             ),
             height: size.height * 0.25,
@@ -58,19 +59,19 @@ class CuratedItems extends StatelessWidget {
               color: Colors.amber,
               size: 17,
             ),
-            Text(eCommerceItems.rating.toString()),
-            Text(
-              "(${eCommerceItems.review})",
-              style: const TextStyle(
-                color: Colors.black26,
-              ),
-            ),
+            // Text(productItems['rating'].toString()),
+            // Text(
+            //   "(${productItems['review']})",
+            //   style: const TextStyle(
+            //     color: Colors.black26,
+            //   ),
+            // ),
           ],
         ),
         SizedBox(
           width: size.width * 0.5,
           child: Text(
-            eCommerceItems.name,
+            productItems['name'],
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
@@ -83,7 +84,7 @@ class CuratedItems extends StatelessWidget {
         Row(
           children: [
             Text(
-              "\$${eCommerceItems.price.toString()}.00",
+              "\$${productItems['price'].toString()}.00",
               style: const TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 18,
@@ -92,15 +93,15 @@ class CuratedItems extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 5),
-            if (eCommerceItems.isCheck == true)
-              Text(
-                "\$${eCommerceItems.price + 255}.00",
-                style: const TextStyle(
-                  color: Colors.black26,
-                  decoration: TextDecoration.lineThrough,
-                  decorationColor: Colors.black26,
-                ),
-              ),
+            // if (productItems.isCheck == true)
+            //   Text(
+            //     "\$${productItems.price + 255}.00",
+            //     style: const TextStyle(
+            //       color: Colors.black26,
+            //       decoration: TextDecoration.lineThrough,
+            //       decorationColor: Colors.black26,
+            //     ),
+            //   ),
           ],
         )
       ],

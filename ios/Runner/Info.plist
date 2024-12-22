@@ -6,6 +6,10 @@
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
 	<string>E Commerce App</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>To Pick The Image</string>
+	<key>NSCameraUsageDescription</key>
+	<string>To Pick The Image</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

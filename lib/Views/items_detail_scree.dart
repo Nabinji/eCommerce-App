@@ -1,11 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce_app/Models/model.dart';
 import 'package:e_commerce_app/Utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
 class ItemsDetailScree extends StatefulWidget {
-  final AppModel eCommerceApp;
-  const ItemsDetailScree({super.key, required this.eCommerceApp});
+  final DocumentSnapshot<Object?> productItems;
+  const ItemsDetailScree({super.key, required this.productItems});
 
   @override
   State<ItemsDetailScree> createState() => _ItemsDetailScreeState();
@@ -76,9 +77,9 @@ class _ItemsDetailScreeState extends State<ItemsDetailScree> {
                 return Column(
                   children: [
                     Hero(
-                      tag: widget.eCommerceApp.image ,
-                      child: Image.asset(
-                        widget.eCommerceApp.image,
+                      tag: widget.productItems['image'],
+                      child: Image.network(
+                        widget.productItems['image'],
                         height: size.height * 0.4,
                         width: size.width * 0.85,
                         fit: BoxFit.cover,
@@ -128,19 +129,19 @@ class _ItemsDetailScreeState extends State<ItemsDetailScree> {
                       color: Colors.amber,
                       size: 17,
                     ),
-                    Text(widget.eCommerceApp.rating.toString()),
-                    Text(
-                      "(${widget.eCommerceApp.review})",
-                      style: const TextStyle(
-                        color: Colors.black26,
-                      ),
-                    ),
+                    // Text(widget.productItems.rating.toString()),
+                    // Text(
+                    //   "(${widget.productItems.review})",
+                    //   style: const TextStyle(
+                    //     color: Colors.black26,
+                    //   ),
+                    // ),
                     const Spacer(),
                     const Icon(Icons.favorite_border),
                   ],
                 ),
                 Text(
-                  widget.eCommerceApp.name,
+                  widget.productItems['name'],
                   maxLines: 1,
                   style: const TextStyle(
                     fontWeight: FontWeight.w600,
@@ -151,7 +152,7 @@ class _ItemsDetailScreeState extends State<ItemsDetailScree> {
                 Row(
                   children: [
                     Text(
-                      "\$${widget.eCommerceApp.price.toString()}.00",
+                      "\$${widget.productItems['price'].toString()}.00",
                       style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 18,
@@ -160,25 +161,26 @@ class _ItemsDetailScreeState extends State<ItemsDetailScree> {
                       ),
                     ),
                     const SizedBox(width: 5),
-                    if (widget.eCommerceApp.isCheck == true)
-                      Text(
-                        "\$${widget.eCommerceApp.price + 255}.00",
-                        style: const TextStyle(
-                          color: Colors.black26,
-                          decoration: TextDecoration.lineThrough,
-                          decorationColor: Colors.black26,
-                        ),
-                      ),
+                    // if (widget.productItems.isCheck == true)
+                    //   Text(
+                    //     "\$${widget.productItems.price + 255}.00",
+                    //     style: const TextStyle(
+                    //       color: Colors.black26,
+                    //       decoration: TextDecoration.lineThrough,
+                    //       decorationColor: Colors.black26,
+                    //     ),
+                    //   ),
                   ],
                 ),
                 const SizedBox(height: 15),
                 Text(
-                  "$myDescription1 ${widget.eCommerceApp.name}$myDescription2",
+                  "$myDescription1 ${widget.productItems['name']}$myDescription2",
                   style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black38,
-                      letterSpacing: -.5),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black38,
+                    letterSpacing: -.5,
+                  ),
                 ),
                 const SizedBox(height: 20),
                 Row(
@@ -200,10 +202,10 @@ class _ItemsDetailScreeState extends State<ItemsDetailScree> {
                           SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: Row(
-                              children: widget.eCommerceApp.fcolor
+                              children: widget.productItems['fcolor']
                                   .asMap()
                                   .entries
-                                  .map((entry) {
+                                  .map<Widget>((entry) {
                                 final int index = entry.key;
                                 final color = entry.value;
                                 return Padding(
@@ -211,7 +213,7 @@ class _ItemsDetailScreeState extends State<ItemsDetailScree> {
                                       const EdgeInsets.only(top: 10, right: 10),
                                   child: CircleAvatar(
                                     radius: 18,
-                                    backgroundColor: color,
+                                    backgroundColor: getColorFromName(color),
                                     child: InkWell(
                                       onTap: () {
                                         setState(() {
@@ -251,10 +253,10 @@ class _ItemsDetailScreeState extends State<ItemsDetailScree> {
                           SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: Row(
-                              children: widget.eCommerceApp.size
+                              children: widget.productItems['size']
                                   .asMap()
                                   .entries
-                                  .map((entry) {
+                                  .map<Widget>((entry) {
                                 final int index = entry.key;
                                 final String size = entry.value;
                                 return GestureDetector(
@@ -362,5 +364,36 @@ class _ItemsDetailScreeState extends State<ItemsDetailScree> {
         ),
       ),
     );
+  }
+
+  Color getColorFromName(String colorName) {
+    switch (colorName) {
+      case 'red':
+        return Colors.red;
+      case 'green':
+        return Colors.green;
+      case 'pink':
+        return Colors.pink;
+      case 'bluegrey':
+        return Colors.blueGrey;
+      case 'blueAccent':
+        return Colors.blueAccent;
+      case 'blue':
+        return Colors.blue;
+      case 'black':
+        return Colors.black;
+      case 'white':
+        return Colors.white;
+      case 'yellow':
+        return Colors.yellow;
+      case 'orange':
+        return Colors.orange;
+      case 'purple':
+        return Colors.purple;
+        case 'brown':
+        return Colors.brown;
+      default:
+        return Colors.blue[100]!; // Default color if not recognized
+    }
   }
 }

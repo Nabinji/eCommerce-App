@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce_app/Models/category_model.dart';
 import 'package:e_commerce_app/Models/model.dart';
 import 'package:e_commerce_app/Utils/colors.dart';
@@ -16,6 +17,12 @@ class AppHomeScreen extends StatefulWidget {
 }
 
 class _AppHomeScreenState extends State<AppHomeScreen> {
+  // for category
+  final CollectionReference categoriesItems =
+      FirebaseFirestore.instance.collection("Category");
+  // for itemsDisplay
+  final CollectionReference items =
+      FirebaseFirestore.instance.collection('items');
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -96,49 +103,60 @@ class _AppHomeScreenState extends State<AppHomeScreen> {
               ),
             ),
             // for category
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: List.generate(
-                  category.length,
-                  (index) => InkWell(
-                    onTap: () {
-                      // filter products based ont he selected category
-                      final filterItems = fashionEcommerceApp
-                          .where((item) =>
-                              item.category.toLowerCase() ==
-                              category[index].name.toLowerCase())
-                          .toList();
-                      // Nvigate to the categoryItems screen with the filtered lsit
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => CategoryItems(
-                            category:category[index].name,
-                            categoryItems: filterItems,
+            StreamBuilder(
+              stream: categoriesItems.snapshots(),
+              builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+                if (streamSnapshot.hasData) {
+                  return SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: List.generate(
+                        streamSnapshot.data!.docs.length,
+                        (index) => InkWell(
+                          // onTap: () {
+                          //   // filter products based ont he selected category
+                          //   final filterItems = fashionEcommerceApp
+                          //       .where((item) =>
+                          //           item.category.toLowerCase() ==
+                          //           category[index].name.toLowerCase())
+                          //       .toList();
+                          //   // Nvigate to the categoryItems screen with the filtered lsit
+                          //   Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //       builder: (_) => CategoryItems(
+                          //         category: category[index].name,
+                          //         categoryItems: filterItems,
+                          //       ),
+                          //     ),
+                          //   );
+                          // },
+                          child: Column(
+                            children: [
+                              Container(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                child: CircleAvatar(
+                                  radius: 30,
+                                  backgroundColor: fbackgroundColor1,
+                                  backgroundImage: NetworkImage(
+                                    streamSnapshot.data!.docs[index]['image'],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              Text(streamSnapshot.data!.docs[index]['name']),
+                            ],
                           ),
                         ),
-                      );
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: CircleAvatar(
-                            radius: 30,
-                            backgroundColor: fbackgroundColor1,
-                            backgroundImage: AssetImage(
-                              category[index].image,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(category[index].name),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
-              ),
+                  );
+                }
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              },
             ),
 
             const Padding(
@@ -167,37 +185,48 @@ class _AppHomeScreenState extends State<AppHomeScreen> {
               ),
             ),
             // for curated items
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: List.generate(
-                  fashionEcommerceApp.length,
-                  (index) {
-                    final eCommerceItems = fashionEcommerceApp[index];
-                    return Padding(
-                      padding: index == 0
-                          ? const EdgeInsets.symmetric(horizontal: 20)
-                          : const EdgeInsets.only(right: 20),
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ItemsDetailScree(
-                                eCommerceApp: eCommerceItems,
+            StreamBuilder(
+              stream: items.snapshots(),
+              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasData) {
+                  return SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: List.generate(
+                        snapshot.data!.docs.length,
+                        (index) {
+                          final productItems = snapshot.data!.docs[index];
+                          // final eCommerceItems = fashionEcommerceApp[index];
+                          return Padding(
+                            padding: index == 0
+                                ? const EdgeInsets.symmetric(horizontal: 20)
+                                : const EdgeInsets.only(right: 20),
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => ItemsDetailScree(
+                                      productItems: productItems,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: CuratedItems(
+                                productItems: productItems,
+                                size: size,
                               ),
                             ),
                           );
                         },
-                        child: CuratedItems(
-                          eCommerceItems: eCommerceItems,
-                          size: size,
-                        ),
                       ),
-                    );
-                  },
-                ),
-              ),
+                    ),
+                  );
+                }
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              },
             ),
           ],
         ),

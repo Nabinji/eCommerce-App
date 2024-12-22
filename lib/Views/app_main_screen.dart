@@ -1,4 +1,5 @@
 import 'package:e_commerce_app/Views/app_home_screen.dart';
+import 'package:e_commerce_app/Views/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -15,7 +16,7 @@ class _AppMainScreenState extends State<AppMainScreen> {
     const AppHomeScreen(),
     const Scaffold(),
     const Scaffold(),
-    const Scaffold(),
+    const ProfileScreen(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -28,7 +29,6 @@ class _AppMainScreenState extends State<AppMainScreen> {
         currentIndex: selectedIndex,
         onTap: (value) {
           setState(() {
-            
           });
           selectedIndex = value;
         },

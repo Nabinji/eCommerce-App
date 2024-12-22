@@ -154,14 +154,14 @@ class CategoryItems extends StatelessWidget {
                         final item = categoryItems[index];
                         return GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => ItemsDetailScree(
-                                  eCommerceApp: item,
-                                ),
-                              ),
-                            );
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (_) => ItemsDetailScree(
+                            //       eCommerceApp: item,
+                            //     ),
+                            //   ),
+                            // );
                           },
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,

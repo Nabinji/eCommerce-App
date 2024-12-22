@@ -1,7 +1,20 @@
+import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+Future<void> saveAppModelToFirebase() async {
+  final CollectionReference ref =
+      FirebaseFirestore.instance.collection("items");
+  for (final AppModel appModel in fashionEcommerceApp) {
+    final String id =
+        DateTime.now().toIso8601String() + Random().nextInt(1000).toString();
+    ref.doc("das");
+    await ref.doc(id).set(appModel.toMap());
+  }
+} // the method toMap isn't defined for the type AppModel. Try correction the name to the name of and existing methd, or  defining a method  name to Map.
+
 class AppModel {
-  final String name, image, description, category;
+  final String name, image, category, uploadedBy;
   final double rating;
   final int review, price;
   List<Color> fcolor;
@@ -10,17 +23,72 @@ class AppModel {
 
   AppModel({
     required this.name,
+    required this.uploadedBy,
     required this.image,
     required this.rating,
     required this.price,
     required this.review,
     required this.fcolor,
     required this.size,
-    required this.description,
     required this.isCheck,
     required this.category,
   });
+
+  // Convert AppModel to Map<String, dynamic> for Firestore
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      "uploadedBy": uploadedBy,
+      'image': image,
+      'category': category,
+      'rating': rating,
+      'review': review,
+      'price': price,
+      'fcolor': fcolor
+          .map((color) => color.value)
+          .toList(), // Convert Color to int value
+      'size': size,
+      'isCheck': isCheck,
+    };
+  }
+
+  // // Optionally, create a factory method to convert Map to AppModel
+  // factory AppModel.fromMap(Map<String, dynamic> map) {
+  //   return AppModel(
+  //     name: map['name'],
+  //     image: map['image'],
+  //     category: map['category'],
+  //     rating: map['rating'],
+  //     review: map['review'],
+  //     price: map['price'],
+  //     fcolor: (map['fcolor'] as List).map((colorValue) => Color(colorValue)).toList(),
+  //     size: List<String>.from(map['size']),
+  //     isCheck: map['isCheck'],
+  //   );
+  // }
 }
+
+//  Map<String, dynamic> toMap() {
+//   return <String, dynamic>{
+//     'title': title,
+//     'isActive': isActive,
+//     'image': image,
+//     'rating': rating,
+//     'date': date,
+//     'price': price,
+//     'address': address,
+//     'vendor': vendor,
+//     'vendorProfession': vendorProfession,
+//     'vendorProfile': vendorProfile,
+//     'review': review,
+//     'bedAndBathroom': bedAndBathroom,
+//     'yearOfHostin': yearOfHostin,
+//     'latitude': latitude,
+//     'longitude': longitude,
+//     'imageUrls': imageUrls,
+
+// }
+// }
 
 List<AppModel> fashionEcommerceApp = [
   // id:1
@@ -30,6 +98,7 @@ List<AppModel> fashionEcommerceApp = [
     image: "assets/category_image/image23.png",
     price: 295,
     review: 136,
+    uploadedBy: "CkWvOGimbzQlwkmDrHL7EdSwiu22",
     isCheck: true,
     category: "Women",
     fcolor: [
@@ -42,7 +111,6 @@ List<AppModel> fashionEcommerceApp = [
       "S",
       "M",
     ],
-    description: "",
   ),
   // id:2
   AppModel(
@@ -51,6 +119,7 @@ List<AppModel> fashionEcommerceApp = [
     image: "assets/category_image/image24.png",
     price: 314,
     review: 178,
+    uploadedBy: "CkWvOGimbzQlwkmDrHL7EdSwiu22",
     category: "Men",
     isCheck: false,
     fcolor: [
@@ -63,7 +132,6 @@ List<AppModel> fashionEcommerceApp = [
       "S",
       "XL",
     ],
-    description: "",
   ),
   // id:3
   AppModel(
@@ -72,6 +140,7 @@ List<AppModel> fashionEcommerceApp = [
     image: "assets/category_image/image28.png",
     price: 187,
     review: 59,
+    uploadedBy: "CkWvOGimbzQlwkmDrHL7EdSwiu22",
     isCheck: false,
     category: "Men",
     fcolor: [
@@ -84,7 +153,6 @@ List<AppModel> fashionEcommerceApp = [
       "XX",
       "XL",
     ],
-    description: "",
   ),
   // id:4
   AppModel(
@@ -93,6 +161,7 @@ List<AppModel> fashionEcommerceApp = [
     image: "assets/category_image/image7.png",
     price: 400,
     review: 29,
+    uploadedBy: "CkWvOGimbzQlwkmDrHL7EdSwiu22",
     category: "Men",
     isCheck: false,
     fcolor: [
@@ -104,7 +173,6 @@ List<AppModel> fashionEcommerceApp = [
       "S",
       "X",
     ],
-    description: "",
   ),
   // id:5
   AppModel(
@@ -114,6 +182,7 @@ List<AppModel> fashionEcommerceApp = [
     price: 290,
     review: 29,
     category: "Men",
+    uploadedBy: "CkWvOGimbzQlwkmDrHL7EdSwiu22",
     isCheck: false,
     fcolor: [
       Colors.black,
@@ -126,7 +195,6 @@ List<AppModel> fashionEcommerceApp = [
       "X",
       "XL",
     ],
-    description: "",
   ),
   // id:6
   AppModel(
@@ -136,6 +204,7 @@ List<AppModel> fashionEcommerceApp = [
     price: 333,
     review: 29,
     category: "Men",
+    uploadedBy: "TFmxVyQW5NTMjc1R9a7SWvqEYTo1",
     isCheck: false,
     fcolor: [
       Colors.brown,
@@ -146,7 +215,6 @@ List<AppModel> fashionEcommerceApp = [
       "S",
       "XX",
     ],
-    description: "",
   ),
 
   // id:7
@@ -155,6 +223,7 @@ List<AppModel> fashionEcommerceApp = [
     rating: 5.0,
     image: "assets/category_image/image1.png",
     price: 330,
+    uploadedBy: "CkWvOGimbzQlwkmDrHL7EdSwiu22",
     review: 29,
     category: "Baby",
     isCheck: true,
@@ -167,7 +236,6 @@ List<AppModel> fashionEcommerceApp = [
       "S",
       "B",
     ],
-    description: "",
   ),
   // id:8
   AppModel(
@@ -175,6 +243,7 @@ List<AppModel> fashionEcommerceApp = [
     rating: 4.5,
     image: "assets/category_image/image2.png",
     price: 990,
+    uploadedBy: "j1cN8HD23GQE4FxTGdspIAkcvru2",
     review: 120,
     category: "Men",
     isCheck: true,
@@ -189,7 +258,6 @@ List<AppModel> fashionEcommerceApp = [
       "X",
       "XL",
     ],
-    description: "",
   ),
   // id:9
   AppModel(
@@ -197,6 +265,7 @@ List<AppModel> fashionEcommerceApp = [
     rating: 5.8,
     image: "assets/category_image/image3.png",
     price: 330,
+    uploadedBy: "j1cN8HD23GQE4FxTGdspIAkcvru2",
     review: 290,
     category: "Baby",
     isCheck: true,
@@ -209,7 +278,6 @@ List<AppModel> fashionEcommerceApp = [
       "S",
       "B",
     ],
-    description: "",
   ),
   // id:10
   AppModel(
@@ -220,13 +288,13 @@ List<AppModel> fashionEcommerceApp = [
     review: 90,
     category: "Kids",
     isCheck: true,
+    uploadedBy: "CkWvOGimbzQlwkmDrHL7EdSwiu22",
     fcolor: [
       Colors.pink,
       Colors.blue,
       Colors.purple,
     ],
     size: ["S", "B", "X"],
-    description: "",
   ),
   // id:11
   AppModel(
@@ -236,6 +304,7 @@ List<AppModel> fashionEcommerceApp = [
     price: 200,
     review: 90,
     category: "Teen",
+    uploadedBy: "j1cN8HD23GQE4FxTGdspIAkcvru2",
     isCheck: true,
     fcolor: [
       Colors.pink,
@@ -243,7 +312,6 @@ List<AppModel> fashionEcommerceApp = [
       Colors.orange,
     ],
     size: ["S", "B", "x"],
-    description: "",
   ),
   // id:13
   AppModel(
@@ -253,6 +321,7 @@ List<AppModel> fashionEcommerceApp = [
     price: 300,
     review: 20,
     category: "Men",
+    uploadedBy: "j1cN8HD23GQE4FxTGdspIAkcvru2",
     isCheck: true,
     fcolor: [
       Colors.green,
@@ -260,7 +329,6 @@ List<AppModel> fashionEcommerceApp = [
       Colors.black,
     ],
     size: ["S", "X" "XL"],
-    description: "",
   ),
   // id:14
   AppModel(
@@ -270,6 +338,7 @@ List<AppModel> fashionEcommerceApp = [
     price: 1300,
     review: 120,
     category: "Teens",
+    uploadedBy: "CkWvOGimbzQlwkmDrHL7EdSwiu22",
     isCheck: true,
     fcolor: [
       Colors.amber,
@@ -277,7 +346,6 @@ List<AppModel> fashionEcommerceApp = [
       Colors.amberAccent,
     ],
     size: ["S", "B" "X"],
-    description: "",
   ),
   // id:15
   AppModel(
@@ -287,6 +355,7 @@ List<AppModel> fashionEcommerceApp = [
     price: 220,
     review: 70,
     category: "Baby",
+    uploadedBy: "TFmxVyQW5NTMjc1R9a7SWvqEYTo1",
     isCheck: true,
     fcolor: [
       Colors.amber,
@@ -294,7 +363,6 @@ List<AppModel> fashionEcommerceApp = [
       Colors.blue,
     ],
     size: ["S", "B"],
-    description: "",
   ),
   // id:16
   AppModel(
@@ -304,6 +372,7 @@ List<AppModel> fashionEcommerceApp = [
     price: 200,
     review: 70,
     category: "Teens",
+    uploadedBy: "j1cN8HD23GQE4FxTGdspIAkcvru2",
     isCheck: false,
     fcolor: [
       Colors.pink,
@@ -311,7 +380,6 @@ List<AppModel> fashionEcommerceApp = [
       Colors.blue,
     ],
     size: ["S", "X", "XL"],
-    description: "",
   ),
   // id:17
   AppModel(
@@ -328,7 +396,7 @@ List<AppModel> fashionEcommerceApp = [
       Colors.grey,
     ],
     size: ["S", "X", "XL"],
-    description: "",
+    uploadedBy: "j1cN8HD23GQE4FxTGdspIAkcvru2",
   ),
   // id:19
   AppModel(
@@ -345,7 +413,7 @@ List<AppModel> fashionEcommerceApp = [
       Colors.grey,
     ],
     size: ["S", "X", "XL"],
-    description: "",
+    uploadedBy: "CkWvOGimbzQlwkmDrHL7EdSwiu22",
   ),
   // id:20
   AppModel(
@@ -362,7 +430,7 @@ List<AppModel> fashionEcommerceApp = [
       Colors.black,
     ],
     size: ["S", "X", "XL"],
-    description: "",
+    uploadedBy: "CkWvOGimbzQlwkmDrHL7EdSwiu22",
   ),
   // id:20
   AppModel(
@@ -379,7 +447,7 @@ List<AppModel> fashionEcommerceApp = [
       Colors.black,
     ],
     size: ["S", "X", "XL"],
-    description: "",
+    uploadedBy: "CkWvOGimbzQlwkmDrHL7EdSwiu22",
   ),
   // id:20
   AppModel(
@@ -396,7 +464,7 @@ List<AppModel> fashionEcommerceApp = [
       Colors.black,
     ],
     size: ["S", "X", "XX"],
-    description: "",
+    uploadedBy: "CkWvOGimbzQlwkmDrHL7EdSwiu22",
   ),
   // id:21
   AppModel(
@@ -413,7 +481,7 @@ List<AppModel> fashionEcommerceApp = [
       Colors.black,
     ],
     size: ["S", "X", "SX"],
-    description: "",
+    uploadedBy: "CkWvOGimbzQlwkmDrHL7EdSwiu22",
   ),
 ];
 const myDescription1 = "Elevate your casual wardrobe with our";
